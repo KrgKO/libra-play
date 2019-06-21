@@ -14,3 +14,13 @@ To start cli `./scripts/cli/start_cli_testnet.sh` - inside libra folder (after s
 
 ## Move
 https://developers.libra.org/docs/move-overview#writing-transaction-scripts
+
+## Test own transaction script
+The example transaction script store at transaction_scripts folder and start deployment by
+```
+./compile_node.sh
+```
+Starting local peer takes around 10-15 mins
+
+## Documentation
+https://developers.libra.org/docs/welcome-to-libra
