@@ -1,7 +1,7 @@
 # Libra-play
 
 To play libra with know nothing
-Reference: https://developers.libra.org/docs/my-first-transaction
+Before start everything try to read this https://developers.libra.org/docs/my-first-transaction
 
 To start cli `./scripts/cli/start_cli_testnet.sh` - inside libra folder (after setting up)
 
@@ -15,12 +15,26 @@ To start cli `./scripts/cli/start_cli_testnet.sh` - inside libra folder (after s
 ## Move
 https://developers.libra.org/docs/move-overview#writing-transaction-scripts
 
-## Test own transaction script
+## Test own transaction script with local node
 The example transaction script store at transaction_scripts folder and start deployment by
 ```
 ./compile_node.sh
 ```
 Starting local peer takes around 10-15 mins
+
+## Libra with docker
+Libra repository provide docker file already at `./libra/docker`
+
+Start build by `docker build -f ./docker/client/client.Dockerfile -t libra:1.0.0 .` - need to stay at `./libra` first
+
+## To start libra API
+Currently libra only have CLI so, we need to call CLI via API by building docker container for libra CLI
+ 
+Execute `cd libra-api && node server.js`
+
+Command line
+1. `docker run --rm -it --name libra libra:1.0.0`
+2. `echo {command} | docker run --rm -i --name libra libra:1.0.0`
 
 ## Documentation
 https://developers.libra.org/docs/welcome-to-libra
