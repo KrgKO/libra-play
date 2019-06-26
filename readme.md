@@ -27,6 +27,9 @@ Libra repository provide docker file already at `./libra/docker`
 
 Start build by `docker build -f ./docker/client/client.Dockerfile -t libra:1.0.0 .` - need to stay at `./libra` first
 
+## Working with child process
+http://2ality.com/2018/05/child-process-streams.html
+
 ## To start libra API
 Currently libra only have CLI so, we need to call CLI via API by building docker container for libra CLI
  
