@@ -1,0 +1,104 @@
+{
+	"info": {
+		"_postman_id": "33919a02-d7b3-4cbe-8ec8-00c78a71b870",
+		"name": "libra",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:7007/account/create",
+					"host": [
+						"localhost"
+					],
+					"port": "7007",
+					"path": [
+						"account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mint account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"amount\": 30\n}"
+				},
+				"url": {
+					"raw": "localhost:7007/account/mint/:address",
+					"host": [
+						"localhost"
+					],
+					"port": "7007",
+					"path": [
+						"account",
+						"mint",
+						":address"
+					],
+					"variable": [
+						{
+							"key": "address",
+							"value": "901465a9fd9db2fefc52a863efb6d0577f23d76a2b71359195dd4519fb6fbd0c"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7007/query/balance/:address",
+					"host": [
+						"localhost"
+					],
+					"port": "7007",
+					"path": [
+						"query",
+						"balance",
+						":address"
+					],
+					"variable": [
+						{
+							"key": "address",
+							"value": "901465a9fd9db2fefc52a863efb6d0577f23d76a2b71359195dd4519fb6fbd0c"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
