@@ -17,6 +17,10 @@ const mnemonic_path = process.env.WALLET_PATH || "/tmp/libra-wallet";
 
 app.use(bodyParser.json());
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve), ms);
+}
+
 async function write(writable, cmd) {
   await streamWrite(writable, cmd);
   await streamEnd(writable);
@@ -44,6 +48,7 @@ app.post("/account/create", async (req, res) => {
   });
 
   try {
+    // Nextsteps: Freeze session before remove container to exec to get mnemonic for account retrieval
     await write(cli.stdin, "a c\n");
     const { address } = await read(cli.stdout);
 
