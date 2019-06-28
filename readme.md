@@ -56,3 +56,6 @@ Need to use when want to recover wallet
 
 ## Note for transfer libra
 If wallet does not exist (does not recover wallet) transfer libra is impossible
+
+## NodeJS child_process and shell
+Sometimes child_process cannot do multiple thing in the mean time like if want to read file and execute command we cannot control the flow. So, we need to use 2 library that will be able to execute command in the mean time (difference process in term of event loops)
