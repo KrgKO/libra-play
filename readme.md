@@ -11,6 +11,7 @@ To start cli `./scripts/cli/start_cli_testnet.sh` - inside libra folder (after s
 3. Retrieve transaction by account `query sequence {index}` - Will show transaction(s) which is using that account (reference by index) as source account
 4. Transfering coin `transfer {source_index} {target_index} {amount}` - Reference: https://developers.libra.org/docs/life-of-a-transaction
 5. Query balance `query balance {index}` - Will query balance of target account by index
+6. Retrieve wallet `account recover`
 
 ## Move
 https://developers.libra.org/docs/move-overview#writing-transaction-scripts
@@ -41,3 +42,17 @@ Command line
 
 ## Documentation
 https://developers.libra.org/docs/welcome-to-libra
+
+## How does mnemonic file works
+It used for generate account's address and also stored as a key of wallet on libra peer
+```
+// before generate account
+service patch program edit similar casual ghost dad toast cupboard record bonus smoke october random tube meadow keep grain arctic coconut process destroy bus;0
+
+// after generate account
+service patch program edit similar casual ghost dad toast cupboard record bonus smoke october random tube meadow keep grain arctic coconut process destroy bus;{running_number}
+```
+Need to use when want to recover wallet
+
+## Note for transfer libra
+If wallet does not exist (does not recover wallet) transfer libra is impossible

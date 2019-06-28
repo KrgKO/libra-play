@@ -3,6 +3,7 @@ const { spawn } = require("child_process");
 const bodyParser = require("body-parser");
 const fs = require("fs-extra");
 const util = require("util");
+const { exec } = require("shelljs");
 
 const {
   streamWrite,
@@ -23,6 +24,9 @@ function sleep(ms) {
 
 async function write(writable, cmd) {
   await streamWrite(writable, cmd);
+}
+
+async function end(writable) {
   await streamEnd(writable);
 }
 
@@ -43,17 +47,28 @@ async function read(readable) {
 
 app.post("/account/create", async (req, res) => {
   console.info("[create] account create");
-  const cli = spawn("docker", ["run", "--rm", "-i", "libra:1.0.0"], {
-    stdio: ["pipe", "pipe"]
-  });
+  const cli = spawn(
+    "docker",
+    ["run", "--rm", "--name", "libra", "-i", "libra:1.0.0"],
+    {
+      stdio: ["pipe", "pipe"]
+    }
+  );
 
   try {
-    // Nextsteps: Freeze session before remove container to exec to get mnemonic for account retrieval
+    const mnemonicFile = Date.now();
     await write(cli.stdin, "a c\n");
+    exec(
+      `docker exec -i libra sed  "s/;0/;1/g" client.mnemonic >> ../libra-wallet/${mnemonicFile}`
+    );
+    await end(cli.stdin);
     const { address } = await read(cli.stdout);
 
-    await appendFileAsync("../libra-wallet/wallet", address + "\n");
-    return res.json({ message: "account created", address });
+    await appendFileAsync(
+      "../libra-wallet/wallet",
+      `${address}:${mnemonicFile}` + "\n"
+    );
+    return res.json({ message: "account created", address, mnemonicFile });
   } catch (e) {
     console.error("[create] failed with error:", e);
     return res.status(500).json({ error: "cannot create an account" });
@@ -85,7 +100,9 @@ app.post("/account/mint/:address", async (req, res) => {
   }
 });
 
-app.post("/transfer", (req, res) => {});
+app.post("/transfer", (req, res) => {
+  // TODO: Add account retrieval: account recover {mnemonic_file} -> can readline to find mnemonic by address: use forloop line
+});
 
 app.get("/query/balance/:address", async (req, res) => {
   console.info("[balance] query balance");
