@@ -59,3 +59,22 @@ If wallet does not exist (does not recover wallet) transfer libra is impossible.
 
 ## NodeJS child_process and shell
 Sometimes child_process cannot do multiple thing in the mean time like if want to read file and execute command we cannot control the flow. So, we need to use 2 library that will be able to execute command in the mean time (difference process in term of event loops)
+
+## Bug when recover transaction then transfer
+Scenerio:
+```
+    create account
+    create account
+    mint 0 100
+    transfer 0 > 1 10
+    write mnemonic_wallet
+    recover mnemonic_wallet
+    transfer 0 > 1 10 # failed
+
+    # workaround
+    transfer 0 > 1 10 # failed
+    transfer 0 > 1 10 # success
+```
+
+It failed because sequence of **account has been resetted after recover account**
+First transfer will `retrieve sequence` and second transfer will be `able to transfer`

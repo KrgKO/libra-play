@@ -60,7 +60,7 @@
 					"variable": [
 						{
 							"key": "address",
-							"value": "901465a9fd9db2fefc52a863efb6d0577f23d76a2b71359195dd4519fb6fbd0c"
+							"value": "56cfd6d18e6b01713e01508d2da07184939ca8dccf52f6855066eb5ab5292172"
 						}
 					]
 				}
@@ -95,6 +95,34 @@
 							"key": "address",
 							"value": "901465a9fd9db2fefc52a863efb6d0577f23d76a2b71359195dd4519fb6fbd0c"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"source\": \"56cfd6d18e6b01713e01508d2da07184939ca8dccf52f6855066eb5ab5292172\",\n\t\"destination\": \"935686ca53960b4a4b1b2d0b6da3488862e36d2cfab34c0a705811d5073ca403\",\n\t\"amount\": \"10\",\n\t\"wallet\": \"1561819804187\"\n}"
+				},
+				"url": {
+					"raw": "localhost:7007/transfer",
+					"host": [
+						"localhost"
+					],
+					"port": "7007",
+					"path": [
+						"transfer"
 					]
 				}
 			},
