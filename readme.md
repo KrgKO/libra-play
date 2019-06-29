@@ -3,6 +3,8 @@
 To play libra with know nothing
 Before start everything try to read this https://developers.libra.org/docs/my-first-transaction
 
+Libra repository commit: 737839b744794c0ca3be3db2934de7ebf056639a
+
 To start cli `./scripts/cli/start_cli_testnet.sh` - inside libra folder (after setting up)
 
 ## Explanations
@@ -76,5 +78,5 @@ Scenerio:
     transfer 0 > 1 10 # success
 ```
 
-It failed because sequence of **account has been resetted after recover account**
-First transfer will `retrieve sequence` and second transfer will be `able to transfer`
+It failed because sequence of **account has been resetted after recover account**.
+First transfering will `retrieve sequence` and second transfering will be `able to transfer`
