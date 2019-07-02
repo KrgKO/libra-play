@@ -30,6 +30,12 @@ async function end(writable) {
   await streamEnd(writable);
 }
 
+function delayExec(cmd) {
+  setTimeout(() => {
+    exec(cmd);
+  }, 500);
+}
+
 async function read(readable) {
   const response = {
     transfer: false
@@ -62,11 +68,13 @@ app.post("/account/create", async (req, res) => {
 
   try {
     const mnemonicFile = Date.now();
+    await sleep(2000);
     await write(cli.stdin, "a c\n");
     await sleep(1000);
-    exec(
+    delayExec(
       `docker exec -i libra sed  "s/;0/;1/g" client.mnemonic >> ../libra-wallet/${mnemonicFile}`
     );
+
     await end(cli.stdin);
     const { address } = await read(cli.stdout);
 
@@ -110,7 +118,7 @@ app.post("/account/mint/:address", async (req, res) => {
 app.post("/transfer", async (req, res) => {
   console.info("[transfer] transfer libra");
   const { source, destination, amount, wallet } = req.body;
-  let transferSuccess = false
+  let transferSuccess = false;
 
   try {
     const cli = spawn(
@@ -121,13 +129,13 @@ app.post("/transfer", async (req, res) => {
       }
     );
     await sleep(1000);
-    exec(`docker cp ../libra-wallet/${wallet} libra:/tmp/user.mnemonic`);
+    delayExec(`docker cp ../libra-wallet/${wallet} libra:/tmp/user.mnemonic`);
     await write(cli.stdin, `a r /tmp/user.mnemonic\n`);
     await sleep(1000);
     await write(cli.stdin, `t ${source} ${destination} ${amount}\n`);
     await end(cli.stdin);
     const { transfer } = await read(cli.stdout);
-    transferSuccess = transfer
+    transferSuccess = transfer;
 
     if (!transferSuccess) {
       const cli = spawn(
@@ -137,15 +145,16 @@ app.post("/transfer", async (req, res) => {
           stdio: ["pipe", "pipe"]
         }
       );
-      await sleep(1000);
-      exec(`docker cp ../libra-wallet/${wallet} libra:/tmp/user.mnemonic`);
+      await sleep(2000);
+      delayExec(`docker cp ../libra-wallet/${wallet} libra:/tmp/user.mnemonic`);
       await write(cli.stdin, `a r /tmp/user.mnemonic\n`);
       await sleep(1000);
+      // First transfer will retrieve sequence of account
       await write(cli.stdin, `t ${source} ${destination} ${amount}\n`);
       await write(cli.stdin, `t ${source} ${destination} ${amount}\n`);
       await end(cli.stdin);
       const { transfer } = await read(cli.stdout);
-      transferSuccess = transfer
+      transferSuccess = transfer;
     }
 
     if (transferSuccess) {
