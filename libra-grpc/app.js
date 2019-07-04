@@ -2,7 +2,9 @@ const protoLoader = require("@grpc/proto-loader");
 const grpcLibrary = require("grpc");
 const path = require("path");
 
-function main() {
+const HOST = "ac.testnet.libra.org:8000";
+
+function main(cmd, params) {
   const packageDefinition = protoLoader.loadSync(
     path.join(__dirname, "./proto/admission_control.proto"),
     {
@@ -17,32 +19,29 @@ function main() {
 
   const packageObject = grpcLibrary.loadPackageDefinition(packageDefinition);
   const client = new packageObject.admission_control.AdmissionControl(
-    "ac.testnet.libra.org:8000",
+    HOST,
     grpcLibrary.credentials.createInsecure()
   );
-  const params = {
-    account: Buffer.from(
-      "435fc8fc85510cf38a5b0cd6595cbb8fbb10aa7bb3fe9ad9820913ba867f79d4",
-      "hex"
-    ),
-    sequence_number: 1,
-    fetch_events: true
-  };
+
   client.updateToLatestLedger(
     {
       client_known_version: 0,
-      requested_items: [
-        { get_account_transaction_by_sequence_number_request: params }
-      ]
+      requested_items: [{ [`${cmd}_request`]: params }]
     },
     (e, r) => {
-      console.log(
-        "\n\n",
-        r.response_items[0].get_account_transaction_by_sequence_number_response
-          .proof_of_current_sequence_number
-      );
+      if (e) {
+        console.error(e);
+      }
+      console.info(r.response_items[0][`${cmd}_response`]);
     }
   );
 }
 
-main();
+main("get_account_transaction_by_sequence_number", {
+  account: Buffer.from(
+    "12b81b16677a33bf5931b574921905479802aca3aae6a9886716328a3167d9d3",
+    "hex"
+  ),
+  sequence_number: 0,
+  fetch_events: true
+});
