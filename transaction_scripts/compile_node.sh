@@ -2,7 +2,7 @@
 
 echo "Start local libra node..."
 
-cd ./libra
+cd ../libra
 cp ../transaction_scripts/peer_to_peer_transfer.mvir language/stdlib/transaction_scripts/peer_to_peer_transfer.mvir
 ls -la language/stdlib/transaction_scripts/
 
