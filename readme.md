@@ -74,7 +74,9 @@ First transfering will `retrieve sequence` and second transfering will be `able 
 - https://developers.libra.org/docs/welcome-to-libra
 - https://developers.libra.org/docs/move-overview#writing-transaction-scripts
 
-## Try to modify libra CLI **Not a recommended solution**
+## Try to modify libra CLI
+**Note:** This is not a recommended solution to modify source code
+
 - Start at `./client/src`
 - Create new file such as `whoami_commands.rs`
 ```
