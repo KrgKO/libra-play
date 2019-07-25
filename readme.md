@@ -73,3 +73,46 @@ First transfering will `retrieve sequence` and second transfering will be `able 
 ## Libra Reference
 - https://developers.libra.org/docs/welcome-to-libra
 - https://developers.libra.org/docs/move-overview#writing-transaction-scripts
+
+## Try to modify libra CLI **Not a recommended solution**
+- Start at `./client/src`
+- Create new file such as `whoami_commands.rs`
+```
+use crate::{client_proxy::ClientProxy, commands::*};
+
+pub struct WhoamiCommand {}
+
+impl Command for WhoamiCommand {
+    fn get_aliases(&self) -> Vec<&'static str> {
+        vec!["whoami", "i"]
+    }
+    fn get_description(&self) -> &'static str {
+        "Who am i"
+    }
+    fn execute(&self, client: &mut ClientProxy, params: &[&str]) {
+        println!("IT\'S MEEE");
+        return;
+    }
+}
+```
+- To make `main.rs` file know that new library exists by modify `lib.rs`
+```
+pub(crate) mod _______________;
+pub(crate) mod whoami_commands;
+```
+Add this line below a set of crates
+- To prepare command need to interact with `commands.rs`
+Import command by
+```
+use crate::{
+    ...., whoami_commands::WhoamiCommand,
+};
+```
+Then add command to vector
+```
+    let commands: Vec<Arc<dyn Command>> = vec![
+        ...
+        Arc::new(WhoamiCommand {}),
+    ];
+```
+Now start libra CLI `./script/start_cli_testnet.sh` new command will added to CLI
