@@ -118,3 +118,112 @@ Then add command to vector
     ];
 ```
 Now start libra CLI `./script/start_cli_testnet.sh` new command will added to CLI
+
+## While start swarm mode (local node)
+
+By command `cargo run -p libra_swarm -- -s`
+
+Faucet account created in file "/tmp/keypair.{random}/temp_faucet_keys"
+Base directory containing logs and configs: "/tmp/.tmp{random}"
+
+What's inside
+- **genesis.blob** -> Store all config and account statistic such as hash, balance, sequence number, etc.
+- **{hash}.node.config.toml**
+```
+[base]
+peer_id = "8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f"
+peer_keypairs_file = "8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f.node.keys.toml"
+data_dir_path = "/tmp/.tmp27S9Ys"
+trusted_peers_file = "trusted_peers.config.toml"
+node_sync_batch_size = 1000
+node_sync_retries = 3
+node_sync_channel_buffer_size = 10
+node_async_log_chan_size = 256
+
+[metrics]
+dir = "metrics"
+collection_interval_ms = 1000
+push_server_addr = ""
+
+[execution]
+address = "localhost"
+port = 44319
+testnet_genesis = false
+genesis_file_location = "genesis.blob"
+
+[admission_control]
+address = "0.0.0.0"
+admission_control_service_port = 33631
+need_to_check_mempool_before_validation = false
+
+[debug_interface]
+admission_control_node_debug_port = 43523
+secret_service_node_debug_port = 40531
+storage_node_debug_port = 45207
+metrics_server_port = 38663
+address = "0.0.0.0"
+
+[storage]
+address = "localhost"
+port = 40419
+dir = "libradb/8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f/db"
+
+[network]
+seed_peers_file = "seed_peers.config.toml"
+listen_address = "/ip4/0.0.0.0/tcp/46565"
+advertised_address = "/ip4/0.0.0.0/tcp/46565"
+discovery_interval_ms = 1000
+connectivity_check_interval_ms = 5000
+enable_encryption_and_authentication = true
+
+[consensus]
+max_block_size = 100
+proposer_type = "rotating_proposer"
+contiguous_rounds = 2
+
+[mempool]
+broadcast_transactions = true
+shared_mempool_tick_interval_ms = 50
+shared_mempool_batch_size = 100
+shared_mempool_max_concurrent_inbound_syncs = 100
+capacity = 10000000
+capacity_per_user = 100
+sequence_cache_capacity = 1000
+system_transaction_timeout_secs = 86400
+system_transaction_gc_interval_ms = 180000
+mempool_service_port = 45305
+address = "localhost"
+
+[log_collector]
+is_async = true
+use_std_output = true
+[vm_config.publishing_options]
+type = "Locked"
+whitelist = ["88c0c64595f6cec7d0c0bfe29e1be1886c736ec3d26888d049e30909f7a72836", "2bb3828f55bc640a85b17d9c6e120e84f8c068c9fd850e1a1d61d2f91ed295fd", "ee31d65b559ad5a300e6a508ff3edb2d23f1589ef68d0ead124d8f0374073d84", "d3493756a00b7a9e4d9ca8482e80fd055411ce53882bdcb08fec97d42eef0bde"]
+
+[secret_service]
+address = "localhost"
+secret_service_port = 43543
+
+```
+- **{hash}.node.keys.toml**
+```
+	network_signing_private_key = "200000000000000082001573a003fd3b7fd72ffb0eaf63aac62f12deb629dca72785a66268ec758b"
+	network_signing_public_key = "2000000000000000664f6e8f36eacb1770fa879d86c2c1d0fafea145e84fa7d671ab7a011a54d509"
+	network_identity_private_key = "200000000000000018db36900560898178e0ad009abf1f491330dc1c246e3d6cb264f6900271d55c"
+	network_identity_public_key = "2000000000000000b1df0ea1b4c1400454bab824e2e3ef6669e4231e2b9332020d9630fe1cfb2808"
+	consensus_private_key = "2000000000000000fb1c12c1efcb64c5603ca15ac896d1abc1082b17b096c9176547992eaa0eb646"
+
+```
+- **seed_peers.config.toml**
+```
+[seed_peers]
+8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f = ["/ip4/0.0.0.0/tcp/46565"]
+```
+- **trusted_peers.config.toml**
+```
+[peers.8deeeaed65f0cd7484a9e4e5ac51fbac548f2f71299a05e000156031ca78fb9f]
+network_signing_pubkey = "2000000000000000664f6e8f36eacb1770fa879d86c2c1d0fafea145e84fa7d671ab7a011a54d509"
+network_identity_pubkey = "2000000000000000b1df0ea1b4c1400454bab824e2e3ef6669e4231e2b9332020d9630fe1cfb2808"
+consensus_pubkey = "200000000000000090bba9133465da772eea2823cd0d871dbf0f27580ec8b791ebfa21ce18baae7a"
+```
