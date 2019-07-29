@@ -8,3 +8,5 @@ Connect libra validator by using gRPC
 
 ## Guideline
 - https://github.com/bonustrack/libra-grpc
+- https://github.com/jolestar/libra
+- https://github.com/perfectmak/libra-core
