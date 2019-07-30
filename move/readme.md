@@ -4,23 +4,39 @@ Move is a smart contract language for libra
 
 ## Change VM mode
 
-Change mode of vm from **Locked** to **Open** at `vm_config.mvir` because it will accept only validated smart contract if need to deploy on local node
+Change mode of vm from **Locked** to **Open** at `./libra/config/data/configs/node.config.toml` because it will accept only validated smart contract if need to deploy on local node
+
+``` toml
+[vm_config]
+  [vm_config.publishing_options]
+  type = "Open"
+  whitelist = [
+      "ae1b54220905fca36d046a6e093632ed1f219e0a35a4fd7ba82e6e0d515f0b8e",
+      "fb999f2d6f45efc9b991993e332f40760171de8a46db40ca93f1baff56842c44",
+      "6465374a3ecf6d1a3836bbab3bcd624244a0217530a601fa20de80d562f87d80",
+      "774b10985dd9bf17ddee899256942c1dc0ab2c1b07d99ec78f774651f01e04b8"
+  ]
+```
 
 ## To build compiler
 
 At ./libra
-```
+
+``` sh
     cargo build --bin compiler
 ```
+
 To build compiler to compile mvir to byte code
 
 To compile a file
-```
+
+``` sh
     ./libra/target/debug/compiler <filename.mvir>
 ```
 
 Example:
-```
+
+``` sh
     CompiledProgram: {
     Modules: [
     ],
@@ -73,10 +89,12 @@ Example:
 
 Reference: https://developers.libra.org/docs/crates/ir-to-bytecode
 
-## More about move
+## Compile mvir to hex
+
 - `./libra/target/debug/compiler ./move/example.mvir -o example.out` - Save compiled bytecode to *.out
 - Then `hexdump *.out` to change as OPCODE
-```
+
+``` sh
 0000000 494c 5242 5641 0a4d 0001 0107 004a 0000
 0000010 0004 0000 4e03 0000 0900 0000 0c00 0057
 0000020 0000 000a 0000 610d 0000 0600 0000 0500
@@ -93,7 +111,37 @@ Reference: https://developers.libra.org/docs/crates/ir-to-bytecode
 00000d0 0000 0b17 2401 0e04 0c00 0c00 1101 0202
 00000e0
 ```
+
 - To convert to oneline by `xxd -c 100000 -p *.out`
-```
+
+``` sh
 4c49425241564d0a010007014a00000004000000034e000000090000000c570000000a0000000d610000000600000005670000003100000004980000002000000007b8000000280000000000000100020001030101040002000204020201020104030404020402063c53454c463e0c4c696272614163636f756e74046d61696e0762616c616e63650f7061795f66726f6d5f73656e6465720000000000000000000000000000000000000000000000000000000000000000000104000f002b0d020c0211010d030c03060a00000000000000170b0124040e000c000c01110202
 ```
+
+## Other way to apply business logic
+
+Can apply as business logic on client side before create transactions might use
+
+- Official CLI with modify (not recommended)
+- Unofficial SDK with encoded program attached with request
+- Modify stdlib (Only test)
+
+## Unit tests
+
+Can try to run command `cargo test -p functional_tests --test testsuite` to run all unit test and get the ideas to create own testcase
+The new testcase can added into `./libra/language/functional_tests/tests`
+
+## Development command
+
+Before that modify follow [this](#change-vm-mode)
+
+Using `dev` command of official CLI
+
+## Local libra node
+
+Use command `cargo run -p libra_swarm -- -s`
+
+or connect via separate process by `cargo run --bin client -- -a localhost -p 38009 -s "/tmp/.tmp{random}/trusted_peers.config.toml" -m "/tmp/keypair.{random}/temp_faucet_keys"`
+
+- Compiled mvir by `dev compile <index|sender_address> <path_to_mvir>`
+**Note:** path_to_mvir should be a full path

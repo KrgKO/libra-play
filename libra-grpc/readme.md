@@ -3,8 +3,10 @@
 Connect libra validator by using gRPC
 
 ## Prerequisite
+
 - Install dependencies - `npm install`
 - Try to use app by `node app.js`
 
 ## Guideline
+
 - https://github.com/bonustrack/libra-grpc
