@@ -11,7 +11,7 @@ Or follow these steps
 **Note:**
 
 - Libra repository commit: 737839b744794c0ca3be3db2934de7ebf056639a for earier test
-- Current commit: dfdcbb69f4cea6640d0e592e51202a4a9b9f08ba
+- Current commit: 0ba0013fd8db3bafd23b80e11f15027b5588e6c1 on testnet branch
 
 ## Command Line Explanations
 

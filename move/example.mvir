@@ -7,7 +7,7 @@ main (payee: address, amount: u64) {
   sender = get_txn_sender();
   balance = LibraAccount.balance(move(sender));
   
-  if (move(balance) - 10 > copy(amount)) {
+  if (move(balance) < 10) {
     LibraAccount.pay_from_sender(move(payee), move(amount));
   }
   return;

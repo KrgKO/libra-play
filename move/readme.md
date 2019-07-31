@@ -1,147 +1,104 @@
 # Move
 
 Move is a smart contract language for libra
+Recommended commit: 0ba0013fd8db3bafd23b80e11f15027b5588e6c1
 
-## Change VM mode
+If need to read the [old_version](./readme_old.md).
 
-Change mode of vm from **Locked** to **Open** at `./libra/config/data/configs/node.config.toml` because it will accept only validated smart contract if need to deploy on local node
+## Deployment steps
 
-``` toml
-[vm_config]
-  [vm_config.publishing_options]
-  type = "Open"
-  whitelist = [
-      "ae1b54220905fca36d046a6e093632ed1f219e0a35a4fd7ba82e6e0d515f0b8e",
-      "fb999f2d6f45efc9b991993e332f40760171de8a46db40ca93f1baff56842c44",
-      "6465374a3ecf6d1a3836bbab3bcd624244a0217530a601fa20de80d562f87d80",
-      "774b10985dd9bf17ddee899256942c1dc0ab2c1b07d99ec78f774651f01e04b8"
-  ]
-```
+1. Able to start libra node as swarm with command `cargo run -p libra_swarm -- -s`
+2. Prepare transaction script
+3. Able to compile transaction script
 
-## To build compiler
-
-At ./libra
-
-``` sh
+    ``` sh
+    # To build compiler binary
     cargo build --bin compiler
-```
 
-To build compiler to compile mvir to byte code
+    # Call compiler
+    cd libra
+    ./target/debug/compiler -o ../move/example.program ../move/example.mvir
+    ```
 
-To compile a file
+    Example output:
 
-``` sh
-    ./libra/target/debug/compiler <filename.mvir>
-```
+    ``` JSON
+    {"code":[76,73,66,82,65,86,77,10,1,0,7,1,74,0,0,0,4,0,0,0,3,78,0,0,0,9,0,0,0,12,87,0,0,0,12,0,0,0,13,99,0,0,0,8,0,0,0,5,107,0,0,0,49,0,0,0,4,156,0,0,0,32,0,0,0,7,188,0,0,0,42,0,0,0,0,0,0,1,0,2,0,1,3,1,1,4,0,2,0,2,4,2,0,2,1,2,1,4,0,3,0,3,4,4,2,4,2,6,60,83,69,76,70,62,12,76,105,98,114,97,65,99,99,111,117,110,116,4,109,97,105,110,7,98,97,108,97,110,99,101,15,112,97,121,95,102,114,111,109,95,115,101,110,100,101,114,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,15,0,43,13,2,12,2,17,1,0,13,3,12,3,6,10,0,0,0,0,0,0,0,23,11,1,36,4,14,0,12,0,12,1,17,2,0,2],"args":[],"modules":[]}
+    ```
 
-Example:
+4. Make transaction
 
-``` sh
-    CompiledProgram: {
-    Modules: [
-    ],
-    Script: CompiledScript: {
-    Main:
-        public 0x0.<SELF>.main(Address, Integer): ()
-            locals(0): Address, Integer, Address, Integer,
-            GetTxnSenderAddress
-            StLoc(2)
-            MoveLoc(2)
-            Call(0x0.LibraAccount.balance(Address): (Integer))
-            StLoc(3)
-            MoveLoc(3)
-            LdConst(10)
-            Sub
-            CopyLoc(1)
-            Gt
-            BrFalse(14)
-            MoveLoc(0)
-            MoveLoc(1)
-            Call(0x0.LibraAccount.pay_from_sender(Address, Integer): ())
-            Ret
-    Struct Handles: []
-    Module Handles: [
-        0x0.<SELF>,
-        0x0.LibraAccount,]
-    Function Handles: [
-        0x0.<SELF>.main(Address, Integer): (),
-        0x0.LibraAccount.balance(Address): (Integer),
-        0x0.LibraAccount.pay_from_sender(Address, Integer): (),]
-    Type Signatures: []
-    Function Signatures: [
-        (Address, Integer): (),
-        (Address): (Integer),]
-    Locals Signatures: [
-        Address, Integer, Address, Integer,]
-    Strings: [
-        <SELF>,
-        LibraAccount,
-        main,
-        balance,
-        pay_from_sender,]
-    ByteArrays: []
-    Addresses: [
-        0x0,]
+    ``` sh
+    # Compile transaction builder
+    cd libra/language/transaction_builder
+    cargo build --features='build-binary'
+    cd ../..
+
+    # Execute transaction builder
+    ./target/debug/transaction_builder 8c42c6890f79b6a52f88c44ba04483ba5624e96c53ed2165c15de3d115dbefea 3 ../move/example.compiled ../move/example.txn --args 0x91d27bab1ee84af7f5e5eea8e220665cd9d136652eb35aad9725c8de1934bc0e 95000000
+
+    ./target/debug/transaction_builder <sender> <sequence_number> <program> <transaction_output> <payee> <amount>
+
+    # Do not forget to put 0x in front of payee
+    ```
+
+    **Note:** Before build transaction need to create account first for using as sender and payee
+    **Note2:** For amount need to input as X*10^6
+
+5. Execute transaction
+
+    At libra cli swarm mode
+
+    ``` sh
+    # Command
+    usage: dev <arg>
+
+    Use the following args for this command:
+
+    compile | c <sender_account_address>|<sender_account_ref_id> <file_path> [is_module (default=false)] [output_file_path (compile into tmp file by default)]
+        Compile move program
+    publish | p <sender_account_address>|<sender_account_ref_id> <compiled_module_path>
+        Publish move module on-chain
+    execute | e <sender_account_address>|<sender_account_ref_id> <compiled_module_path> [parameters]
+        Execute custom move script
+    submit | submitb | s | sb 
+        <signer_account_address>|<signer_account_ref_id> <path_to_raw_transaction> Suffix 'b' is for blocking. 
+        Load a RawTransaction from file and submit to the network
+    ```
+
+    Example:
+
+    ``` sh
+    libra% dev s 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa /path/to/libra-play/move/example.txn
+    Transaction submitted to validator
+    To query for transaction status, run: query txn_acc_seq 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa 0 <fetch_events=true|false>
+    libra% query txn_acc_seq 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa 0 true
+    >> Getting committed transaction by account and sequence number
+    Committed transaction: SignedTransaction {
+    raw_txn: RawTransaction {
+        sender: 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa,
+        sequence_number: 0,
+        payload: {,
+            transaction: <unknown transaction>,
+            args: [
+                {ADDRESS: f658f56b7ecfa018fe44f11db442e563d4e888b9e43c7746eb0af4576ebac67c},
+                {U64: 95000000},
+            ]
+        },
+        max_gas_amount: 1000000,
+        gas_unit_price: 0,
+        expiration_time: 18446744073709551615s,
+    },
+    public_key: 144e6fee8f9a9355bdaa062a59ab4ec8fc76b1f00520246a40df2d439316be05,
+    signature: Signature( R: CompressedEdwardsY: [27, 97, 228, 47, 17, 15, 51, 207, 207, 184, 82, 239, 188, 159, 52, 94, 180, 245, 2, 220, 1, 229, 243, 239, 246, 131, 119, 15, 196, 120, 3, 20], s: Scalar{
+        bytes: [212, 62, 236, 199, 74, 16, 209, 234, 121, 57, 202, 247, 91, 48, 132, 199, 142, 145, 92, 67, 91, 165, 180, 11, 99, 67, 143, 232, 113, 123, 167, 10],
+    } ),
     }
-
-    }
-```
-
-Reference: https://developers.libra.org/docs/crates/ir-to-bytecode
-
-## Compile mvir to hex
-
-- `./libra/target/debug/compiler ./move/example.mvir -o example.out` - Save compiled bytecode to *.out
-- Then `hexdump *.out` to change as OPCODE
-
-``` sh
-0000000 494c 5242 5641 0a4d 0001 0107 004a 0000
-0000010 0004 0000 4e03 0000 0900 0000 0c00 0057
-0000020 0000 000a 0000 610d 0000 0600 0000 0500
-0000030 0067 0000 0031 0000 9804 0000 2000 0000
-0000040 0700 00b8 0000 0028 0000 0000 0100 0200
-0000050 0100 0103 0401 0200 0200 0204 0102 0102
-0000060 0304 0404 0402 0602 533c 4c45 3e46 4c0c
-0000070 6269 6172 6341 6f63 6e75 0474 616d 6e69
-0000080 6207 6c61 6e61 6563 700f 7961 665f 6f72
-0000090 5f6d 6573 646e 7265 0000 0000 0000 0000
-00000a0 0000 0000 0000 0000 0000 0000 0000 0000
-00000b0 0000 0000 0000 0000 0100 0004 000f 0d2b
-00000c0 0c02 1102 0d01 0c03 0603 000a 0000 0000
-00000d0 0000 0b17 2401 0e04 0c00 0c00 1101 0202
-00000e0
-```
-
-- To convert to oneline by `xxd -c 100000 -p *.out`
-
-``` sh
-4c49425241564d0a010007014a00000004000000034e000000090000000c570000000a0000000d610000000600000005670000003100000004980000002000000007b8000000280000000000000100020001030101040002000204020201020104030404020402063c53454c463e0c4c696272614163636f756e74046d61696e0762616c616e63650f7061795f66726f6d5f73656e6465720000000000000000000000000000000000000000000000000000000000000000000104000f002b0d020c0211010d030c03060a00000000000000170b0124040e000c000c01110202
-```
-
-## Other way to apply business logic
-
-Can apply as business logic on client side before create transactions might use
-
-- Official CLI with modify (not recommended)
-- Unofficial SDK with encoded program attached with request
-- Modify stdlib (Only test)
-
-## Unit tests
-
-Can try to run command `cargo test -p functional_tests --test testsuite` to run all unit test and get the ideas to create own testcase
-The new testcase can added into `./libra/language/functional_tests/tests`
-
-## Development command
-
-Before that modify follow [this](#change-vm-mode)
-
-Using `dev` command of official CLI
-
-## Local libra node
-
-Use command `cargo run -p libra_swarm -- -s`
-
-or connect via separate process by `cargo run --bin client -- -a localhost -p 38009 -s "/tmp/.tmp{random}/trusted_peers.config.toml" -m "/tmp/keypair.{random}/temp_faucet_keys"`
-
-- Compiled mvir by `dev compile <index|sender_address> <path_to_mvir>`
-**Note:** path_to_mvir should be a full path
+    Events:
+    ContractEvent { access_path: AccessPath { address: 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa, type: Resource, hash: "217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97", suffix: "/sent_events_count/" } , index: 0, event_data: AccountEvent { account: f658f56b7ecfa018fe44f11db442e563d4e888b9e43c7746eb0af4576ebac67c, amount: 95000000 } }
+    ContractEvent { access_path: AccessPath { address: f658f56b7ecfa018fe44f11db442e563d4e888b9e43c7746eb0af4576ebac67c, type: Resource, hash: "217da6c6b3e19f1825cfb2676daecce3bf3de03cf26647c78df00b371b25cc97", suffix: "/received_events_count/" } , index: 0, event_data: AccountEvent { account: 59531ef25b76adba4a910a64aea6c8ab7ba1cb1a8187b21daa30dabcafc0adfa, amount: 95000000 } }
+    libra% q b 0
+    Balance is: 5.000000
+    libra% q b 1
+    Balance is: 95.000000
+    ```
