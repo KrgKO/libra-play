@@ -1,6 +1,7 @@
 # Move
 
 Move is a smart contract language for libra
+
 Recommended commit: 0ba0013fd8db3bafd23b80e11f15027b5588e6c1
 
 If need to read the [old_version](./readme_old.md).
@@ -43,6 +44,7 @@ If need to read the [old_version](./readme_old.md).
     ```
 
     **Note:** Before build transaction need to create account first for using as sender and payee
+
     **Note2:** For amount need to input as X*10^6
 
 5. Execute transaction
